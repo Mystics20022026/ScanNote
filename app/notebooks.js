@@ -1,27 +1,43 @@
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
-  Text, TouchableOpacity, View, Modal, TextInput, Alert, ScrollView
+  Alert,
+  Modal,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity, View
 } from 'react-native';
+import { supabase } from '../lib/supabase';
 import { styles } from "./styles/notebooks.styles";
-
-const INITIAL_NOTEBOOKS = [
-  { id: '1', name: 'Notebook 1' },
-  { id: '2', name: 'Resumos' },
-  { id: '3', name: 'Testes' },
-  { id: '4', name: 'Despesas' },
-];
 
 export default function Notebooks() {
   const router = useRouter();
 
-  const [notebooks, setNotebooks] = useState(INITIAL_NOTEBOOKS);
+  const [notebooks, setNotebooks] = useState([]);
   const [selectedId, setSelectedId] = useState(null);
   const [newNotebookModal, setNewNotebookModal] = useState(false);
   const [renameModal, setRenameModal] = useState(false);
   const [inputName, setInputName] = useState('');
 
   const selectedNotebook = notebooks.find((nb) => nb.id === selectedId);
+
+  useEffect(() => {
+    fetchNotebooks();
+  }, []);
+
+  const fetchNotebooks = async () => {
+  const { data, error } = await supabase
+    .from('notebooks')   // ← correto
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('Erro ao carregar notebooks:', error.message);
+  } else {
+    setNotebooks(data);
+  }
+};
 
   const handleSelect = (id) => {
     setSelectedId((prev) => (prev === id ? null : id));
@@ -40,9 +56,18 @@ export default function Notebooks() {
         {
           text: 'Eliminar',
           style: 'destructive',
-          onPress: () => {
-            setNotebooks((prev) => prev.filter((nb) => nb.id !== selectedId));
-            setSelectedId(null);
+          onPress: async () => {
+            const { error } = await supabase
+              .from('notebooks')
+              .delete()
+              .eq('id', selectedId);
+
+            if (error) {
+              Alert.alert('Erro', 'Não foi possível eliminar o caderno.');
+            } else {
+              fetchNotebooks();
+              setSelectedId(null);
+            }
           },
         },
       ]
@@ -58,21 +83,37 @@ export default function Notebooks() {
     setRenameModal(true);
   };
 
-  const handleRenameConfirm = () => {
+  const handleRenameConfirm = async () => {
     if (inputName.trim() === '') return;
-    setNotebooks((prev) =>
-      prev.map((nb) => (nb.id === selectedId ? { ...nb, name: inputName.trim() } : nb))
-    );
-    setRenameModal(false);
-    setInputName('');
+
+    const { error } = await supabase
+      .from('notebooks')
+      .update({ name: inputName.trim() })
+      .eq('id', selectedId);
+
+    if (error) {
+      Alert.alert('Erro', 'Não foi possível renomear o caderno.');
+    } else {
+      fetchNotebooks();
+      setRenameModal(false);
+      setInputName('');
+    }
   };
 
-  const handleNewNotebook = () => {
+  const handleNewNotebook = async () => {
     if (inputName.trim() === '') return;
-    const newNotebook = { id: Date.now().toString(), name: inputName.trim() };
-    setNotebooks((prev) => [...prev, newNotebook]);
-    setNewNotebookModal(false);
-    setInputName('');
+
+    const { error } = await supabase
+      .from('notebooks')
+      .insert([{ name: inputName.trim(), user_id:null }]);
+
+    if (error) {
+      Alert.alert('Erro', 'Não foi possível criar o caderno.');
+    } else {
+      fetchNotebooks();
+      setNewNotebookModal(false);
+      setInputName('');
+    }
   };
 
   const rows = [];

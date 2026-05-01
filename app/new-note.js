@@ -1,12 +1,12 @@
-import { useRouter, useLocalSearchParams } from 'expo-router';
-import { useState, useEffect } from 'react';
-import { StyleSheet, Text, TextInput, View, TouchableOpacity, Alert } from 'react-native';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useEffect, useState } from 'react';
+import { Alert, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { supabase } from '../lib/supabase';
 import { styles } from "./styles/new-note.styles";
 
 export default function NewNote() {
   const router = useRouter();
   const { extractedText } = useLocalSearchParams();
-
   const [text, setText] = useState('');
 
   useEffect(() => {
@@ -15,13 +15,28 @@ export default function NewNote() {
     }
   }, [extractedText]);
 
-  const handleSave = () => {
-    if (text.trim() === '') {
-      Alert.alert('Atenção', 'O texto está vazio!');
-      return;
-    }
+  const handleSave = async () => {
+  if (text.trim() === '') {
+    Alert.alert('Atenção', 'O texto está vazio!');
+    return;
+  }
+
+  const { error } = await supabase
+    .from('notas')              // ← era 'notes', agora é 'notas'
+    .insert([{ 
+      title: 'Nota sem título', // ← campo title obrigatório
+      content: text.trim(),
+      user_id: null
+    }]);
+
+  if (error) {
+    Alert.alert('Erro', 'Não foi possível guardar a nota.');
+    console.error(error);
+  } else {
     Alert.alert('Sucesso', 'Nota guardada com sucesso!');
-  };
+    setText('');
+  }
+};
 
   const handleDelete = () => {
     setText('');
