@@ -33,7 +33,7 @@ export const styles = StyleSheet.create({
     marginBottom: 5,
   },
   scrollContent: {
-    paddingBottom: 120,
+    paddingBottom: 100,
   },
   gridContainer: {
     backgroundColor: '#E9F0F8',
@@ -51,7 +51,7 @@ export const styles = StyleSheet.create({
   },
   notebookBox: {
     flex: 1,
-    height: 75,
+    height: 70,
     backgroundColor: '#FFFFFF',
     borderRadius: 10,
     justifyContent: 'center',

@@ -22,41 +22,29 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingBottom: 120,
   },
-  subTitle: {
+  noteTitleDisplay: {
     fontSize: 18,
     fontWeight: 'bold',
     color: '#555',
     textAlign: 'center',
-    marginTop: 15,
-    marginBottom: 15,
+    marginTop: 25,
+    marginBottom: 20,
   },
-  noteNameContainer: {
-    backgroundColor: '#E9F0F8',
-    borderRadius: 5,
-    borderBottomWidth: 2,
-    borderBottomColor: '#2544AD',
-    marginBottom: 15,
-  },
-  noteNameInput: {
-    paddingVertical: 12,
-    paddingHorizontal: 15,
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#64748B',
-    textAlign: 'center',
-  },
-  textArea: {
+  contentCard: {
     backgroundColor: '#FFFFFF',
     borderRadius: 10,
     padding: 20,
-    fontSize: 14,
-    color: '#333',
     minHeight: 350,
     elevation: 2,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
+  },
+  contentText: {
+    fontSize: 14,
+    color: '#333',
+    lineHeight: 20,
   },
   actionButtonsContainer: {
     marginTop: 20,
@@ -74,14 +62,14 @@ export const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#000',
   },
-  nextButton: {
+  editButton: {
     backgroundColor: '#2544AD',
     paddingVertical: 14,
     borderRadius: 8,
     alignItems: 'center',
     elevation: 3,
   },
-  nextButtonText: {
+  editButtonText: {
     fontSize: 14,
     fontWeight: 'bold',
     color: '#ffffff',
@@ -109,16 +97,16 @@ export const styles = StyleSheet.create({
     color: '#000',
   },
   seeNotesButton: {
-    flex: 1.2,
-    backgroundColor: '#DCE6F5',
+    flex: 1,
+    backgroundColor: '#2544AD',
     paddingVertical: 12,
     borderRadius: 8,
     alignItems: 'center',
-    elevation: 2,
+    elevation: 3,
   },
   seeNotesButtonText: {
     fontSize: 13,
     fontWeight: 'bold',
-    color: '#000',
+    color: '#ffffff',
   },
 });

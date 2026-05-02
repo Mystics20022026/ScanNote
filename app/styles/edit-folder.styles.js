@@ -30,14 +30,14 @@ export const styles = StyleSheet.create({
     marginTop: 15,
     marginBottom: 15,
   },
-  noteNameContainer: {
+  inputContainer: {
     backgroundColor: '#E9F0F8',
     borderRadius: 5,
     borderBottomWidth: 2,
     borderBottomColor: '#2544AD',
     marginBottom: 15,
   },
-  noteNameInput: {
+  nameInput: {
     paddingVertical: 12,
     paddingHorizontal: 15,
     fontSize: 16,
@@ -74,14 +74,14 @@ export const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#000',
   },
-  nextButton: {
+  saveButton: {
     backgroundColor: '#2544AD',
     paddingVertical: 14,
     borderRadius: 8,
     alignItems: 'center',
     elevation: 3,
   },
-  nextButtonText: {
+  saveButtonText: {
     fontSize: 14,
     fontWeight: 'bold',
     color: '#ffffff',
@@ -108,7 +108,7 @@ export const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#000',
   },
-  seeNotesButton: {
+  seeFoldersButton: {
     flex: 1.2,
     backgroundColor: '#DCE6F5',
     paddingVertical: 12,
@@ -116,7 +116,7 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     elevation: 2,
   },
-  seeNotesButtonText: {
+  seeFoldersButtonText: {
     fontSize: 13,
     fontWeight: 'bold',
     color: '#000',

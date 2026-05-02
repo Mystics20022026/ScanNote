@@ -74,14 +74,14 @@ export const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#000',
   },
-  nextButton: {
+  saveButton: {
     backgroundColor: '#2544AD',
     paddingVertical: 14,
     borderRadius: 8,
     alignItems: 'center',
     elevation: 3,
   },
-  nextButtonText: {
+  saveButtonText: {
     fontSize: 14,
     fontWeight: 'bold',
     color: '#ffffff',
@@ -108,17 +108,17 @@ export const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#000',
   },
-  seeNotesButton: {
-    flex: 1.2,
-    backgroundColor: '#DCE6F5',
+  newNoteButton: {
+    flex: 1,
+    backgroundColor: '#2544AD',
     paddingVertical: 12,
     borderRadius: 8,
     alignItems: 'center',
-    elevation: 2,
+    elevation: 3,
   },
-  seeNotesButtonText: {
+  newNoteButtonText: {
     fontSize: 13,
     fontWeight: 'bold',
-    color: '#000',
+    color: '#ffffff',
   },
 });

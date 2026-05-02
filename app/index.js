@@ -1,7 +1,7 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { useEffect } from 'react';
-import { ActivityIndicator, StatusBar, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, StatusBar, Text, View } from 'react-native';
 import { styles } from "./styles/index.styles";
 
 export default function Landing() {
@@ -9,7 +9,7 @@ export default function Landing() {
 
   useEffect(() => {
     setTimeout(() => {
-      router.replace('/menu');
+      router.replace('/edit-note');
     }, 2000);
   }, []);
 
