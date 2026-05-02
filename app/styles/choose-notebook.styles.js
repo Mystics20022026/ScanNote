@@ -23,14 +23,14 @@ export const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#555',
     textAlign: 'center',
-    marginTop: 15,
+    marginTop: 20,
   },
   resumeText: {
     fontSize: 16,
     color: '#333',
     textAlign: 'center',
-    marginTop: 20,
-    marginBottom: 5,
+    marginTop: 10,
+    marginBottom: 10,
   },
   scrollContent: {
     paddingBottom: 120,
@@ -67,6 +67,11 @@ export const styles = StyleSheet.create({
     borderColor: '#2544AD',
     backgroundColor: '#F0F4FF',
   },
+  emptyBox: {
+    backgroundColor: 'transparent',
+    elevation: 0,
+    shadowOpacity: 0,
+  },
   notebookText: {
     fontSize: 14,
     fontWeight: 'bold',
@@ -87,10 +92,6 @@ export const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: 'center',
     elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 1,
   },
   actionTextInline: {
     fontSize: 14,
@@ -119,7 +120,7 @@ export const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#000',
   },
-  newFolderButton: {
+  nextButton: {
     flex: 1,
     backgroundColor: '#2544AD',
     paddingVertical: 14,
@@ -127,58 +128,9 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     elevation: 3,
   },
-  newFolderButtonText: {
+  nextButtonText: {
     fontSize: 14,
     fontWeight: 'bold',
     color: '#ffffff',
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalSheet: {
-    width: '85%',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 15,
-    padding: 25,
-    elevation: 10,
-  },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  modalInput: {
-    borderWidth: 1,
-    borderColor: '#DDD',
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
-    marginBottom: 20,
-    backgroundColor: '#F9F9F9',
-  },
-  modalConfirmButton: {
-    backgroundColor: '#2544AD',
-    paddingVertical: 12,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  modalConfirmText: {
-    color: '#FFF',
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
-  modalCancelButton: {
-    paddingVertical: 12,
-    alignItems: 'center',
-  },
-  modalCancelText: {
-    color: '#777',
-    fontWeight: '600',
   },
 });

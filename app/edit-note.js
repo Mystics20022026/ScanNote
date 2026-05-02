@@ -2,48 +2,59 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Alert, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { supabase } from '../lib/supabase';
-import { styles } from "./styles/new-note.styles";
+import { styles } from "./styles/edit-note.styles";
 
-export default function NewNote() {
+export default function EditNote() {
   const router = useRouter();
-  const { extractedText } = useLocalSearchParams();
+  const { noteId } = useLocalSearchParams();
   
   const [text, setText] = useState('');
   const [noteName, setNoteName] = useState('');
 
   useEffect(() => {
-    if (extractedText) {
-      setText(extractedText);
+    if (noteId) {
+      fetchNoteDetails();
     }
-  }, [extractedText]);
+  }, [noteId]);
 
-  const handleSave = async () => {
-    if (text.trim() === '') {
-      Alert.alert('Atenção', 'O texto detetado está vazio!');
-      return;
-    }
-
-    const finalTitle = noteName.trim() === '' ? 'Nota sem título' : noteName.trim();
-
-    const { error } = await supabase
+  const fetchNoteDetails = async () => {
+    const { data, error } = await supabase
       .from('notas')
-      .insert([{ 
-        title: finalTitle,
-        content: text.trim(),
-        user_id: null
-      }]);
+      .select('*')
+      .eq('id', noteId)
+      .single();
 
     if (error) {
-      Alert.alert('Erro', 'Não foi possível guardar a nota.');
-      console.error(error);
+      console.error('Erro ao carregar nota:', error.message);
     } else {
-      Alert.alert('Sucesso', 'Nota guardada com sucesso!');
-      setText('');
-      setNoteName('');
+      setNoteName(data.title);
+      setText(data.content);
     }
   };
 
-  const handleDelete = () => {
+  const handleUpdate = async () => {
+    if (text.trim() === '') {
+      Alert.alert('Atenção', 'O conteúdo da nota não pode estar vazio.');
+      return;
+    }
+
+    const { error } = await supabase
+      .from('notas')
+      .update({ 
+        title: noteName.trim() || 'Nota sem título',
+        content: text.trim() 
+      })
+      .eq('id', noteId);
+
+    if (error) {
+      Alert.alert('Erro', 'Não foi possível atualizar a nota.');
+    } else {
+      Alert.alert('Sucesso', 'Nota atualizada!');
+      router.back();
+    }
+  };
+
+  const handleDeleteText = () => {
     setText('');
   };
 
@@ -54,7 +65,7 @@ export default function NewNote() {
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <Text style={styles.subTitle}>New Note</Text>
+        <Text style={styles.subTitle}>Editar Notas</Text>
 
         <View style={styles.noteNameContainer}>
           <TextInput
@@ -77,12 +88,12 @@ export default function NewNote() {
         />
 
         <View style={styles.actionButtonsContainer}>
-          <TouchableOpacity style={styles.deleteButton} onPress={handleDelete}>
+          <TouchableOpacity style={styles.deleteButton} onPress={handleDeleteText}>
             <Text style={styles.deleteButtonText}>Delete Text</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.nextButton} onPress={handleSave}>
-            <Text style={styles.nextButtonText}>Next</Text>
+          <TouchableOpacity style={styles.saveButton} onPress={handleUpdate}>
+            <Text style={styles.saveButtonText}>Save</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -91,8 +102,11 @@ export default function NewNote() {
         <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
           <Text style={styles.backButtonText}>Back</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.seeNotesButton} onPress={() => router.push('/notebooks')}>
-          <Text style={styles.seeNotesButtonText}>See Notebooks</Text>
+        <TouchableOpacity 
+          style={styles.newNoteButton} 
+          onPress={() => router.push('/new-note')}
+        >
+          <Text style={styles.newNoteButtonText}>New Note</Text>
         </TouchableOpacity>
       </View>
     </View>

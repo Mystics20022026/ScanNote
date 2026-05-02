@@ -1,41 +1,41 @@
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
-  Alert,
-  Modal,
-  ScrollView,
-  Text,
-  TextInput,
-  TouchableOpacity, View
+    Alert,
+    Modal,
+    ScrollView,
+    Text,
+    TextInput,
+    TouchableOpacity, View
 } from 'react-native';
 import { supabase } from '../lib/supabase';
-import { styles } from "./styles/notebooks.styles";
+import { styles } from "./styles/folders.styles";
 
-export default function Notebooks() {
+export default function Folders() {
   const router = useRouter();
 
-  const [notebooks, setNotebooks] = useState([]);
+  const [folders, setFolders] = useState([]);
   const [selectedId, setSelectedId] = useState(null);
-  const [newNotebookModal, setNewNotebookModal] = useState(false);
+  const [newFolderModal, setNewFolderModal] = useState(false);
   const [renameModal, setRenameModal] = useState(false);
   const [inputName, setInputName] = useState('');
 
-  const selectedNotebook = notebooks.find((nb) => nb.id === selectedId);
+  const selectedFolder = folders.find((f) => f.id === selectedId);
 
   useEffect(() => {
-    fetchNotebooks();
+    fetchFolders();
   }, []);
 
-  const fetchNotebooks = async () => {
+  const fetchFolders = async () => {
     const { data, error } = await supabase
-      .from('notebooks')
+      .from('folders') 
       .select('*')
       .order('created_at', { ascending: false });
 
     if (error) {
-      console.error('Erro ao carregar notebooks:', error.message);
+      console.error(error.message);
     } else {
-      setNotebooks(data || []);
+      setFolders(data || []);
     }
   };
 
@@ -45,12 +45,12 @@ export default function Notebooks() {
 
   const handleDelete = () => {
     if (!selectedId) {
-      Alert.alert('Atenção', 'Seleciona um caderno primeiro.');
+      Alert.alert('Atenção', 'Seleciona uma pasta primeiro.');
       return;
     }
     Alert.alert(
       'Eliminar',
-      `Tens a certeza que queres eliminar "${selectedNotebook?.name}"?`,
+      `Tens a certeza que queres eliminar "${selectedFolder?.name}"?`,
       [
         { text: 'Cancelar', style: 'cancel' },
         {
@@ -58,14 +58,14 @@ export default function Notebooks() {
           style: 'destructive',
           onPress: async () => {
             const { error } = await supabase
-              .from('notebooks')
+              .from('folders')
               .delete()
               .eq('id', selectedId);
 
             if (error) {
-              Alert.alert('Erro', 'Não foi possível eliminar o caderno.');
+              Alert.alert('Erro', 'Não foi possível eliminar a pasta.');
             } else {
-              fetchNotebooks();
+              fetchFolders();
               setSelectedId(null);
             }
           },
@@ -76,10 +76,10 @@ export default function Notebooks() {
 
   const handleEdit = () => {
     if (!selectedId) {
-      Alert.alert('Atenção', 'Seleciona um caderno primeiro.');
+      Alert.alert('Atenção', 'Seleciona uma pasta primeiro.');
       return;
     }
-    setInputName(selectedNotebook?.name || '');
+    setInputName(selectedFolder?.name || '');
     setRenameModal(true);
   };
 
@@ -87,38 +87,38 @@ export default function Notebooks() {
     if (inputName.trim() === '') return;
 
     const { error } = await supabase
-      .from('notebooks')
+      .from('folders')
       .update({ name: inputName.trim() })
       .eq('id', selectedId);
 
     if (error) {
-      Alert.alert('Erro', 'Não foi possível renomear o caderno.');
+      Alert.alert('Erro', 'Não foi possível renomear a pasta.');
     } else {
-      fetchNotebooks();
+      fetchFolders();
       setRenameModal(false);
       setInputName('');
     }
   };
 
-  const handleNewNotebook = async () => {
+  const handleNewFolder = async () => {
     if (inputName.trim() === '') return;
 
     const { error } = await supabase
-      .from('notebooks')
+      .from('folders')
       .insert([{ name: inputName.trim() }]);
 
     if (error) {
-      Alert.alert('Erro', 'Não foi possível criar o caderno.');
+      Alert.alert('Erro', 'Não foi possível criar a pasta.');
     } else {
-      fetchNotebooks();
-      setNewNotebookModal(false);
+      fetchFolders();
+      setNewFolderModal(false);
       setInputName('');
     }
   };
 
   const rows = [];
-  for (let i = 0; i < notebooks.length; i += 2) {
-    rows.push(notebooks.slice(i, i + 2));
+  for (let i = 0; i < folders.length; i += 2) {
+    rows.push(folders.slice(i, i + 2));
   }
 
   return (
@@ -127,7 +127,7 @@ export default function Notebooks() {
         <Text style={styles.headerText}>ScanNote</Text>
       </View>
 
-      <Text style={styles.subTitle}>My Notebooks</Text>
+      <Text style={styles.subTitle}>My Folders</Text>
       <Text style={styles.resumeText}>Resume</Text>
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -147,9 +147,7 @@ export default function Notebooks() {
                     <Text style={styles.notebookText}>{item.name}</Text>
                   </TouchableOpacity>
                 ))}
-                {row.length === 1 && (
-                  <View style={[styles.notebookBox, { backgroundColor: 'transparent', elevation: 0, shadowOpacity: 0 }]} />
-                )}
+                {row.length === 1 && <View style={[styles.notebookBox, { backgroundColor: 'transparent', elevation: 0, shadowOpacity: 0 }]} />}
               </View>
             ))}
           </View>
@@ -171,33 +169,33 @@ export default function Notebooks() {
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.newFolderButton}
-          onPress={() => { setInputName(''); setNewNotebookModal(true); }}
+          onPress={() => { setInputName(''); setNewFolderModal(true); }}
         >
-          <Text style={styles.newFolderButtonText}>New Notebook</Text>
+          <Text style={styles.newFolderButtonText}>New Folders</Text>
         </TouchableOpacity>
       </View>
 
       <Modal
-        visible={newNotebookModal}
+        visible={newFolderModal}
         transparent
         animationType="fade"
-        onRequestClose={() => setNewNotebookModal(false)}
+        onRequestClose={() => setNewFolderModal(false)}
       >
         <View style={styles.modalOverlay}>
           <View style={styles.modalSheet}>
-            <Text style={styles.modalTitle}>Novo Caderno</Text>
+            <Text style={styles.modalTitle}>New Folder</Text>
             <TextInput
               style={styles.modalInput}
-              placeholder="Nome do caderno"
+              placeholder="Folder name"
               placeholderTextColor="#94A3B8"
               value={inputName}
               onChangeText={setInputName}
               autoFocus
             />
-            <TouchableOpacity style={styles.modalConfirmButton} onPress={handleNewNotebook}>
+            <TouchableOpacity style={styles.modalConfirmButton} onPress={handleNewFolder}>
               <Text style={styles.modalConfirmText}>Criar</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.modalCancelButton} onPress={() => setNewNotebookModal(false)}>
+            <TouchableOpacity style={styles.modalCancelButton} onPress={() => setNewFolderModal(false)}>
               <Text style={styles.modalCancelText}>Cancelar</Text>
             </TouchableOpacity>
           </View>
@@ -212,7 +210,7 @@ export default function Notebooks() {
       >
         <View style={styles.modalOverlay}>
           <View style={styles.modalSheet}>
-            <Text style={styles.modalTitle}>Renomear Caderno</Text>
+            <Text style={styles.modalTitle}>Rename Folder</Text>
             <TextInput
               style={styles.modalInput}
               placeholder="Novo nome"
