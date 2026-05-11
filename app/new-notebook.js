@@ -1,14 +1,12 @@
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { Alert, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { supabase } from '../lib/supabase';
 import { styles } from "./styles/new-notebook.styles";
 
 export default function NewNotebook() {
   const router = useRouter();
-  
   const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
 
   const handleSave = async () => {
     if (name.trim() === '') {
@@ -16,12 +14,18 @@ export default function NewNotebook() {
       return;
     }
 
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+      Alert.alert('Erro', 'Não estás autenticado.');
+      return;
+    }
+
     const { error } = await supabase
       .from('notebooks')
       .insert([{ 
         name: name.trim(),
-        description: description.trim(),
-        user_id: null // Adicionar lógica de user_id se necessário
+        user_id: user.id
       }]);
 
     if (error) {
@@ -30,14 +34,8 @@ export default function NewNotebook() {
     } else {
       Alert.alert('Sucesso', 'Caderno criado com sucesso!');
       setName('');
-      setDescription('');
-      router.push('/notebooks');
+      router.replace('/');
     }
-  };
-
-  const handleDeleteText = () => {
-    setDescription('');
-    setName('');
   };
 
   return (
@@ -46,46 +44,28 @@ export default function NewNotebook() {
         <Text style={styles.headerText}>ScanNote</Text>
       </View>
 
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+      <View style={{ paddingHorizontal: 20, paddingTop: 30 }}>
         <Text style={styles.subTitle}>New Notebook</Text>
 
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.nameInput}
-            placeholder="Notebook Name"
-            placeholderTextColor="#94A3B8"
-            value={name}
-            onChangeText={setName}
-          />
-        </View>
-
         <TextInput
-          style={styles.textArea}
-          multiline
-          value={description}
-          onChangeText={setDescription}
-          placeholder="Descrição"
+          style={styles.nameInput}
+          placeholder="Notebook Name"
           placeholderTextColor="#94A3B8"
-          textAlignVertical="top"
+          value={name}
+          onChangeText={setName}
         />
 
-        <View style={styles.actionButtonsContainer}>
-          <TouchableOpacity style={styles.deleteButton} onPress={handleDeleteText}>
-            <Text style={styles.deleteButtonText}>Delete Text</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-            <Text style={styles.saveButtonText}>Save</Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
+        <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
+          <Text style={styles.saveButtonText}>Save</Text>
+        </TouchableOpacity>
+      </View>
 
       <View style={styles.footerSticky}>
         <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
           <Text style={styles.backButtonText}>Back</Text>
         </TouchableOpacity>
-        <TouchableOpacity 
-          style={styles.seeNotebooksButton} 
+        <TouchableOpacity
+          style={styles.seeNotebooksButton}
           onPress={() => router.push('/notebooks')}
         >
           <Text style={styles.seeNotebooksButtonText}>See Notebooks</Text>

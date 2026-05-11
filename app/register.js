@@ -1,6 +1,7 @@
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { Alert, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { supabase } from '../lib/supabase';
 import { styles } from "./styles/login.styles";
 
 export default function Register() {
@@ -10,15 +11,28 @@ export default function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleRegister = () => {
-    if (!name || !email || !password) {
-      Alert.alert("Erro", "Preenche todos os campos");
-      return;
-    }
+  const handleRegister = async () => {
+  if (!name || !email || !password) {
+    Alert.alert("Erro", "Preenche todos os campos");
+    return;
+  }
 
-    Alert.alert("Sucesso", "Conta criada");
-    router.replace("/login");
-  };
+  const { error } = await supabase.auth.signUp({
+    email: email.trim(),
+    password: password,
+    options: {
+      data: { full_name: name.trim() }
+    }
+  });
+
+  if (error) {
+    Alert.alert("Erro", error.message);
+    return;
+  }
+
+  Alert.alert("Sucesso", "Conta criada! Verifica o teu email para confirmar.");
+  router.replace("/login");
+};
 
   return (
     <View style={styles.container}>

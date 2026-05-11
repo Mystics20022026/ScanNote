@@ -14,15 +14,19 @@ export default function ChooseFolder() {
   }, []);
 
   const fetchFolders = async () => {
-    const { data, error } = await supabase
-      .from('folders')
-      .select('*')
-      .order('name', { ascending: true });
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return;
 
-    if (!error) {
-      setFolders(data || []);
-    }
-  };
+  const { data, error } = await supabase
+    .from('folders')
+    .select('*')
+    .eq('user_id', user.id)
+    .order('name', { ascending: true });
+
+  if (!error) {
+    setFolders(data || []);
+  }
+};
 
   const handleSelect = (id) => {
     setSelectedId((prev) => (prev === id ? null : id));

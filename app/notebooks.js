@@ -27,17 +27,21 @@ export default function Notebooks() {
   }, []);
 
   const fetchNotebooks = async () => {
-    const { data, error } = await supabase
-      .from('notebooks')
-      .select('*')
-      .order('created_at', { ascending: false });
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return;
 
-    if (error) {
-      console.error('Erro ao carregar notebooks:', error.message);
-    } else {
-      setNotebooks(data || []);
-    }
-  };
+  const { data, error } = await supabase
+    .from('notebooks')
+    .select('*')
+    .eq('user_id', user.id)
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('Erro ao carregar notebooks:', error.message);
+  } else {
+    setNotebooks(data || []);
+  }
+};
 
   const handleSelect = (id) => {
     setSelectedId((prev) => (prev === id ? null : id));
@@ -101,20 +105,23 @@ export default function Notebooks() {
   };
 
   const handleNewNotebook = async () => {
-    if (inputName.trim() === '') return;
+  if (inputName.trim() === '') return;
 
-    const { error } = await supabase
-      .from('notebooks')
-      .insert([{ name: inputName.trim() }]);
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return;
 
-    if (error) {
-      Alert.alert('Erro', 'Não foi possível criar o caderno.');
-    } else {
-      fetchNotebooks();
-      setNewNotebookModal(false);
-      setInputName('');
-    }
-  };
+  const { error } = await supabase
+    .from('notebooks')
+    .insert([{ name: inputName.trim(), user_id: user.id }]);
+
+  if (error) {
+    Alert.alert('Erro', 'Não foi possível criar o caderno.');
+  } else {
+    fetchNotebooks();
+    setNewNotebookModal(false);
+    setInputName('');
+  }
+};
 
   const rows = [];
   for (let i = 0; i < notebooks.length; i += 2) {

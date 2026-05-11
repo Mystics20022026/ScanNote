@@ -1,12 +1,12 @@
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
-    Alert,
-    Modal,
-    ScrollView,
-    Text,
-    TextInput,
-    TouchableOpacity, View
+  Alert,
+  Modal,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity, View
 } from 'react-native';
 import { supabase } from '../lib/supabase';
 import { styles } from "./styles/folders.styles";
@@ -27,17 +27,21 @@ export default function Folders() {
   }, []);
 
   const fetchFolders = async () => {
-    const { data, error } = await supabase
-      .from('folders') 
-      .select('*')
-      .order('created_at', { ascending: false });
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return;
 
-    if (error) {
-      console.error(error.message);
-    } else {
-      setFolders(data || []);
-    }
-  };
+  const { data, error } = await supabase
+    .from('folders')
+    .select('*')
+    .eq('user_id', user.id)
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error(error.message);
+  } else {
+    setFolders(data || []);
+  }
+};
 
   const handleSelect = (id) => {
     setSelectedId((prev) => (prev === id ? null : id));
@@ -101,21 +105,23 @@ export default function Folders() {
   };
 
   const handleNewFolder = async () => {
-    if (inputName.trim() === '') return;
+  if (inputName.trim() === '') return;
 
-    const { error } = await supabase
-      .from('folders')
-      .insert([{ name: inputName.trim() }]);
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return;
 
-    if (error) {
-      Alert.alert('Erro', 'Não foi possível criar a pasta.');
-    } else {
-      fetchFolders();
-      setNewFolderModal(false);
-      setInputName('');
-    }
-  };
+  const { error } = await supabase
+    .from('folders')
+    .insert([{ name: inputName.trim(), user_id: user.id }]);
 
+  if (error) {
+    Alert.alert('Erro', 'Não foi possível criar a pasta.');
+  } else {
+    fetchFolders();
+    setNewFolderModal(false);
+    setInputName('');
+  }
+};
   const rows = [];
   for (let i = 0; i < folders.length; i += 2) {
     rows.push(folders.slice(i, i + 2));

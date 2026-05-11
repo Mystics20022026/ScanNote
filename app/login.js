@@ -1,6 +1,7 @@
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { Alert, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { supabase } from '../lib/supabase';
 import { styles } from "./styles/login.styles";
 
 export default function Login() {
@@ -9,14 +10,24 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleLogin = () => {
-    if (!email || !password) {
-      Alert.alert("Erro", "Preenche todos os campos");
-      return;
-    }
+  const handleLogin = async () => {
+  if (!email || !password) {
+    Alert.alert("Erro", "Preenche todos os campos");
+    return;
+  }
 
-    router.replace("/");
-  };
+  const { error } = await supabase.auth.signInWithPassword({
+    email: email.trim(),
+    password: password,
+  });
+
+  if (error) {
+    Alert.alert("Erro", error.message);
+    return;
+  }
+
+  router.replace("/");
+};
 
   return (
     <View style={styles.container}>

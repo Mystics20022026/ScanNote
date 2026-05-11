@@ -16,18 +16,22 @@ export default function Notes() {
   }, [notebookId]);
 
   const fetchNotes = async () => {
-    const { data, error } = await supabase
-      .from('notas')
-      .select('*')
-      .eq('notebook_id', notebookId)
-      .order('created_at', { ascending: false });
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return;
 
-    if (error) {
-      console.error('Erro ao carregar notas:', error.message);
-    } else {
-      setNotes(data || []);
-    }
-  };
+  const { data, error } = await supabase
+    .from('notas')
+    .select('*')
+    .eq('user_id', user.id)
+    .eq('notebook_id', notebookId)
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('Erro ao carregar notas:', error.message);
+  } else {
+    setNotes(data || []);
+  }
+};
 
   const handleSelect = (id) => {
     setSelectedId((prev) => (prev === id ? null : id));

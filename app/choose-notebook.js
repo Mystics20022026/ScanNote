@@ -16,43 +16,51 @@ export default function ChooseNotebook() {
   }, []);
 
   const fetchNotebooks = async () => {
-    const { data, error } = await supabase
-      .from('notebooks')
-      .select('*')
-      .order('name', { ascending: true });
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return;
 
-    if (error) {
-      console.error('Erro ao carregar cadernos:', error.message);
-    } else {
-      setNotebooks(data || []);
-    }
-  };
+  const { data, error } = await supabase
+    .from('notebooks')
+    .select('*')
+    .eq('user_id', user.id)
+    .order('name', { ascending: true });
+
+  if (error) {
+    console.error('Erro ao carregar cadernos:', error.message);
+  } else {
+    setNotebooks(data || []);
+  }
+};
 
   const handleSelect = (id) => {
     setSelectedId((prev) => (prev === id ? null : id));
   };
 
   const handleSaveNote = async () => {
-    if (!selectedId) {
-      Alert.alert('Atenção', 'Por favor, seleciona um caderno.');
-      return;
-    }
+  if (!selectedId) {
+    Alert.alert('Atenção', 'Por favor, seleciona um caderno.');
+    return;
+  }
 
-    const { error } = await supabase
-      .from('notas')
-      .insert([{ 
-        title: noteTitle || 'Nota sem título',
-        content: noteContent,
-        notebook_id: selectedId
-      }]);
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return;
 
-    if (error) {
-      Alert.alert('Erro', 'Não foi possível guardar a nota.');
-    } else {
-      Alert.alert('Sucesso', 'Nota guardada no caderno selecionado!');
-      router.push('/notebooks');
-    }
-  };
+  const { error } = await supabase
+    .from('notas')
+    .insert([{ 
+      title: noteTitle || 'Nota sem título',
+      content: noteContent,
+      notebook_id: selectedId,
+      user_id: user.id
+    }]);
+
+  if (error) {
+    Alert.alert('Erro', 'Não foi possível guardar a nota.');
+  } else {
+    Alert.alert('Sucesso', 'Nota guardada no caderno selecionado!');
+    router.push('/notebooks');
+  }
+};
 
   const rows = [];
   for (let i = 0; i < notebooks.length; i += 2) {
